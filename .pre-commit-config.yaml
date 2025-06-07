@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: freeze-requirements
+        name: Freeze requirements.txt
+        entry: bash scripts/freeze_requirements.sh
+        language: system
+        type: [python]
