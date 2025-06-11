@@ -41,6 +41,48 @@ class DistanceData:
         values = struct.unpack('>6d', data)  # > = big-endian, 6 doubles
         return DistanceData(*values)
 @dataclasses.dataclass
+class DistanceDataBase:
+    current_error: float
+    error: float
+    dt: float
+    robot_dt: float
+    translational_position: float
+    translational_target: float
+    pwm_left: float
+    pwm_right: float
+    up: float
+    ui: float
+    ud: float
+
+@dataclasses.dataclass
+class DistanceDataPID(DistanceDataBase):
+    @staticmethod
+    def get_length():
+        return 88  # 11 doubles × 8 bytes each
+
+    @staticmethod
+    def from_bytes(data: bytes) -> 'DistanceDataPID':
+        if len(data) < DistanceDataPID.get_length():
+            raise ValueError(f'Not enough bytes to unpack DistanceDataPID (need {DistanceDataPID.get_length()} bytes)')
+        values = struct.unpack('>11d', data)
+        return DistanceDataPID(*values)
+
+
+@dataclasses.dataclass
+class DistanceDataPIDSpeedFF(DistanceDataBase):
+    uff: float
+
+    @staticmethod
+    def get_length():
+        return 96  # 12 doubles × 8 bytes each
+
+    @staticmethod
+    def from_bytes(data: bytes) -> 'DistanceDataPIDSpeedFF':
+        if len(data) < DistanceDataPIDSpeedFF.get_length():
+            raise ValueError(f'Not enough bytes to unpack DistanceDataPIDSpeedFF (need {DistanceDataPIDSpeedFF.get_length()} bytes)')
+        values = struct.unpack('>12d', data)
+        return DistanceDataPIDSpeedFF(*values)
+@dataclasses.dataclass
 class DistanceAngleData:
     summed_error: float
     error: float
@@ -176,12 +218,13 @@ class DistanceSpeedData:
             raise ValueError(f'Not enough bytes to unpack DistanceSpeedData (need {DistanceSpeedData.get_length()} bytes)')
         values = struct.unpack('>7d', data)
         return DistanceSpeedData(*values)
+
 versions = [
     AngleData,                   # 0: BENCHMARK_LEGACY_ANGLE
     DistanceData,                # 1: BENCHMARK_LEGACY_DISTANCE
     DistanceAngleData,           # 2: BENCHMARK_LEGACY_DISTANCE_ANGLE
     AngleSpeedComparisonData,    # 3: BENCHMARK_ANGLE_V_0_1
-    DistanceData,                # 4: BENCHMARK_DISTANCE_V_0_1
+    [None, DistanceDataPID, DistanceDataPIDSpeedFF], # 4: BENCHMARK_DISTANCE_V_0_1
     DistanceAngleData,           # 5: BENCHMARK_DISTANCE_ANGLE_V_0_1
     AnglePWMData,                # 6: Z_N_LEGACY_ANGLE
     DistancePWMData,             # 7: Z_N_LEGACY_DISTANCE

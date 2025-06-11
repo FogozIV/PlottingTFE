@@ -8,15 +8,27 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.ion()
 
+version_with_subversion = [4]
+
 version = None
+subVersion = None
 result = []
 class_type = None
-with open("BenchmarkController1749419732ANGLE.bin", "rb") as f:
+with open("data_bin/BenchmarkController1749656555DISTANCE.bin", "rb") as f:
     data = f.read(8)
     if(len(data) != 8):
         raise ValueError("Version of Benchmark not found")
     version = struct.unpack('>Q', data)[0]
-    class_type = versions[version]
+    if(version in version_with_subversion):
+        data = f.read(1)
+        if(len(data) != 1):
+            raise ValueError("Subversion of Benchmark not found")
+        subVersion = struct.unpack('>B', data)[0]
+        class_type = versions[version][subVersion]
+    else:
+        class_type = versions[version]
+
+
     while data := f.read(class_type.get_length()):
         result.append(class_type.from_bytes(data))
         print(result[-1])
@@ -24,7 +36,6 @@ if all(getattr(d, 'dt', 0.0) == 0.0 for d in result):
     dts = list(accumulate(d.robot_dt for d in result))
     for obj, dt in zip(result, dts):
         obj.dt = dt
-
 def plot_translational_tracking(data):
     if not data:
         print("No data to plot.")
@@ -405,6 +416,7 @@ elif version == 1:
     plot_error(result)
     plot_error_speed(result)
     plot_acceleration(result)
+    do_fft(result, lambda d: (d.translational_target - d.translational_position))
 
 elif version == 2:
     plot_translational_tracking(result)
