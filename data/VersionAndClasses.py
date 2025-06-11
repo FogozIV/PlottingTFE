@@ -48,8 +48,8 @@ class DistanceDataBase:
     robot_dt: float
     translational_position: float
     translational_target: float
-    pwm_left: float
-    pwm_right: float
+    left_pwm: float
+    right_pwm: float
     up: float
     ui: float
     ud: float

@@ -14,7 +14,7 @@ version = None
 subVersion = None
 result = []
 class_type = None
-with open("data_bin/BenchmarkController1749656555DISTANCE.bin", "rb") as f:
+with open("BenchmarkController1749682384DISTANCE.bin", "rb") as f:
     data = f.read(8)
     if(len(data) != 8):
         raise ValueError("Version of Benchmark not found")
@@ -403,7 +403,20 @@ def plot_speed_error(data):
     plt.grid(True)
     plt.tight_layout()
     plt.show(block=True)
-
+def plot_up_ui_ud(data):
+    if not data:
+        print("No data to plot.")
+        return
+    time = [d.dt for d in data]
+    plt.figure()
+    plt.plot(time, [d.up for d in data], label="UP")
+    plt.plot(time, [d.ui for d in data], label="UI")
+    plt.plot(time, [d.ud for d in data], label="UD")
+    plt.title("PWM result")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
 
 if version == 0:
     plot_rotational_tracking(result)
@@ -433,6 +446,15 @@ elif version == 3:
     plot_rotational_speed(result)
     plot_error_speed_vs_pll(result)
     do_fft(result, lambda d: (d.rotational_target_deg - d.rotational_position_deg))
+elif version == 4:
+    plot_translational_tracking(result)
+    plot_error(result)
+    plot_error_speed(result)
+    plot_acceleration(result)
+    plot_pwm(result)
+    plot_up_ui_ud(result)
+    do_fft(result, lambda d: (d.translational_target - d.translational_position))
+    do_fft(result, lambda d: (d.ud))
 elif version == 6:  # Z_N_LEGACY_ANGLE
     plot_rotational_tracking_with_pwm(result)
     plot_heading_error(result)
