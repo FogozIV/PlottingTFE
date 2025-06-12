@@ -1,7 +1,7 @@
 import dataclasses
 import struct
 from itertools import accumulate
-
+from data.CurveBenchmarkClasses import *
 
 @dataclasses.dataclass
 class AngleData:
@@ -229,5 +229,7 @@ versions = [
     AnglePWMData,                # 6: Z_N_LEGACY_ANGLE
     DistancePWMData,             # 7: Z_N_LEGACY_DISTANCE
     AngleSpeedData,              # 8: Z_N_LEGACY_ANGLE_SPEED
-    DistanceSpeedData            # 9: Z_N_LEGACY_DISTANCE_SPEED
+    DistanceSpeedData,           # 9: Z_N_LEGACY_DISTANCE_SPEED
+    [None, [None, BenchmarkPIDPID, BenchmarkPIDPIDFF], [None, BenchmarkPIDFFPID, BenchmarkPIDFFPIDFF]] #10 : BENCHMARK_LEGACY_CURVE
+
 ]
