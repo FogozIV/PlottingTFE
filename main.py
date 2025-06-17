@@ -19,7 +19,7 @@ subsubVersion = None
 result = []
 class_type = None
 done = True
-with open("BenchmarkCurve1750098710.bin", "rb") as f:
+with open("data_bin/BenchmarkCurve1750160317.bin", "rb") as f:
     data = f.read(8)
     if(len(data) != 8):
         raise ValueError("Version of Benchmark not found")
@@ -44,6 +44,7 @@ with open("BenchmarkCurve1750098710.bin", "rb") as f:
             class_type = versions[version][subVersion]
     else:
         class_type = versions[version]
+    print(version, " ", subVersion)
 
 
     while data := f.read(class_type.get_length()):
@@ -94,7 +95,10 @@ elif version == 4:
     plot_error_speed(result)
     plot_acceleration(result)
     plot_pwm(result)
-    plot_up_ui_ud(result)
+    if subVersion == 1:
+        plot_up_ui_ud(result)
+    elif subVersion == 2 :
+        plot_up_ui_ud_uff(result)
     do_fft(result, lambda d: (d.translational_target - d.translational_position))
     do_fft(result, lambda d: (d.ud))
 elif version == 6:  # Z_N_LEGACY_ANGLE
