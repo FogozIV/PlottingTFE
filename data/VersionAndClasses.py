@@ -230,6 +230,6 @@ versions = [
     DistancePWMData,             # 7: Z_N_LEGACY_DISTANCE
     AngleSpeedData,              # 8: Z_N_LEGACY_ANGLE_SPEED
     DistanceSpeedData,           # 9: Z_N_LEGACY_DISTANCE_SPEED
-    [None, [None, BenchmarkPIDPID, BenchmarkPIDPIDFF], [None, BenchmarkPIDFFPID, BenchmarkPIDFFPIDFF]] #10 : BENCHMARK_LEGACY_CURVE
-
+    CurveBenchmarkParser,        # 10 : BENCHMARK_LEGACY_CURVE
+    CurveBenchmarkParserV01      # 11 : BENCHMARK_CURVE_V_0_1
 ]

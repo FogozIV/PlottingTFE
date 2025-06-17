@@ -10,15 +10,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.ion()
 
-version_with_subversion = [4, 10]
-version_with_subsubversion = [10]
+version_with_subversion = [4, 10,11]
+version_with_subsubversion = [10,11]
 
 version = None
 subVersion = None
 subsubVersion = None
 result = []
 class_type = None
-with open("BenchmarkCurve1749767991.bin", "rb") as f:
+done = True
+with open("BenchmarkCurve1750098710.bin", "rb") as f:
     data = f.read(8)
     if(len(data) != 8):
         raise ValueError("Version of Benchmark not found")
@@ -34,7 +35,11 @@ with open("BenchmarkCurve1749767991.bin", "rb") as f:
             if (len(data) != 1):
                 raise ValueError("Subsubversion of Benchmark not found")
             subsubVersion = struct.unpack('>B', data)[0]
-            class_type = versions[version][subVersion][subsubVersion]
+            class_type = versions[version]
+            if isinstance(class_type, type) and issubclass(class_type, CustomParser):
+                class_type = class_type(subVersion, subsubVersion)
+            else:
+                class_type = class_type[subVersion][subsubVersion]
         else:
             class_type = versions[version][subVersion]
     else:
@@ -42,15 +47,20 @@ with open("BenchmarkCurve1749767991.bin", "rb") as f:
 
 
     while data := f.read(class_type.get_length()):
-        result.append(class_type.from_bytes(data))
+        try:
+            result.append(class_type.from_bytes(data))
+        except ValueError:
+            done = False
+            print("Value error")
+            break
         print(result[-1])
 if all(getattr(d, 'dt', 0.0) == 0.0 for d in result):
     dts = list(accumulate(d.robot_dt for d in result))
     for obj, dt in zip(result, dts):
         obj.dt = dt
-
-
-if version == 0:
+if not done:
+    print("issue")
+elif version == 0:
     plot_rotational_tracking(result)
     plot_heading_error(result)
     plot_rotational_speed(result)
@@ -151,5 +161,33 @@ elif version == 10:
     plot_error_speed(result)
     plot_acceleration(result)
     plot_pwm(result)
+    plot_up_ui_ud(result)
+    plot_robot_dt(result)
     plot_xy_trajectory(result)
     plot_current_error(result)
+    if result[0].raw_ud is not None:
+        plot_raw_ud_distance(result)
+    if result[0].raw_ud_angle is not None:
+        plot_raw_ud_angle(result)
+    if result[0].a is not None:
+        plot_a(result)
+elif version == 11:
+    #plot_rotational_tracking(result)
+    #plot_error_speed(result)
+    plot_translational_ramp_speed_comparison(result)
+    plot_acceleration(result)
+    plot_pwm(result)
+    plot_up_ui_ud(result)
+    plot_robot_dt(result)
+    plot_xy_trajectory(result)
+    plot_current_error(result)
+    if result[0].raw_ud is not None:
+        plot_raw_ud_distance(result)
+    if result[0].raw_ud_angle is not None:
+        plot_raw_ud_angle(result)
+    if result[0].a is not None:
+        plot_a(result)
+    plot_variable(result, lambda x: x.rotational_position_deg, ylabel="Rotational Position(deg)", title="Rotational Position in function of time")
+    plot_variable(result, lambda x: x.rotational_target_deg, ylabel="Rotational Target(deg)", title="Rotational Target in function of time")
+    plot_rotational_tracking(result)
+    plot_translational_tracking(result)

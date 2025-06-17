@@ -44,6 +44,33 @@ def plot_rotational_speed_comparison(data):
     plt.grid(True)
     plt.tight_layout()
     plt.show(block=True)
+
+def plot_translational_ramp_speed_comparison(data, other:bool=False):
+    if not data:
+        print("No data to plot.")
+        return
+
+    time = [d.dt for d in data]
+
+    ramp_speed = [d.translational_ramp_speed for d in data]
+    estimated_speed = [d.translational_speed_estimation for d in data]
+    other_estimated_speed = [d.translational_speed_estimation_2 for d in data]
+
+    time_bis = [data[i].dt for i in range(len(data)-1)]
+    speed = [(data[i+1].translational_position - data[i].translational_position)/data[i].robot_dt for i in range(len(data)-1)]
+    plt.figure()
+    plt.plot(time_bis, speed, label="Translational Ramp Speed raw derivative (mm/s)")
+    plt.plot(time, ramp_speed, label="Ramp Speed (mm/s)")
+    plt.plot(time, estimated_speed, label="Estimated Speed (mm/s)")
+    if other:
+        plt.plot(time, other_estimated_speed, label="Other Estimated Speed (mm/s)")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Speed (mm/s)")
+    plt.title("Comparison of Translational Speeds")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
 def plot_rotational_tracking(data):
     if not data:
         print("No data to plot.")
@@ -418,4 +445,68 @@ def plot_xy_trajectory(data):
     plt.axis('equal')  # Ensure aspect ratio is correct
     plt.grid(True)
     plt.tight_layout()
+    plt.show(block=True)
+def plot_robot_dt(data):
+    if not data:
+        print("No data to plot.")
+    plt.figure()
+    plt.plot([d.robot_dt for d in data], label="Robot DT")
+    plt.xlabel("Tick")
+    plt.ylabel("DT Value")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
+
+def plot_raw_ud_distance(data):
+    if not data:
+        print("No data to plot.")
+    plt.figure()
+    plt.plot([d.dt for d in data], [d.raw_ud for d in data], label="Robot raw ud")
+    plt.plot([d.dt for d in data], [d.ud for d in data], label="Robot ud")
+    plt.xlabel("t(sec)")
+    plt.ylabel("PWM Signal")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
+
+def plot_raw_ud_angle(data):
+    if not data:
+        print("No data to plot.")
+    plt.figure()
+    plt.plot([d.dt for d in data], [d.raw_ud_angle for d in data], label="Robot raw ud")
+    plt.plot([d.dt for d in data], [d.ud_angle for d in data], label="Robot ud")
+    plt.xlabel("t(sec)")
+    plt.ylabel("PWM Signal")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
+
+##doesn't make any sense because we don't warp the angle like that
+def plot_a(data):
+    if not data:
+        print("No data to plot.")
+    plt.figure()
+    plt.plot([d.dt for d in data], [d.a for d in data], label="Angular orientation")
+    plt.xlabel("t(sec)")
+    plt.ylabel("Orientation (deg)")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
+
+def plot_variable(data, get_variable, title=None, ylabel=None):
+    if not data:
+        print("No data to plot.")
+    plt.figure()
+    plt.plot([d.dt for d in data], [get_variable(d) for d in data])
+    plt.xlabel("t(sec)")
+    if ylabel is not None:
+        plt.ylabel(ylabel)
+    plt.legend()
+    if title is not None:
+        plt.title(title)
+    plt.grid(True)
     plt.show(block=True)
