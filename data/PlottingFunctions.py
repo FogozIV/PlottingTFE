@@ -425,6 +425,21 @@ def plot_up_ui_ud(data):
     plt.grid(True)
     plt.tight_layout()
     plt.show(block=True)
+def plot_up_ui_ud_uff(data):
+    if not data:
+        print("No data to plot.")
+        return
+    time = [d.dt for d in data]
+    plt.figure()
+    plt.plot(time, [d.up for d in data], label="UP")
+    plt.plot(time, [d.ui for d in data], label="UI")
+    plt.plot(time, [d.ud for d in data], label="UD")
+    plt.plot(time, [d.uff for d in data], label="UFF")
+    plt.title("PWM result")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
 def plot_xy_trajectory(data):
     if not data:
         print("No data to plot.")
@@ -438,6 +453,9 @@ def plot_xy_trajectory(data):
     plt.figure()
     plt.plot(actual_x, actual_y, label="Actual Path")
     plt.plot(target_x, target_y, label="Target Path")
+    for i in range(0, len(data), 200):
+        plt.text(actual_x[i], actual_y[i], f'{data[i].dt:.1f}', fontsize=8, ha='right')
+        plt.text(target_x[i], target_y[i], f'{data[i].dt:.1f}', fontsize=8, ha='right')
     plt.xlabel("X position (mm)")
     plt.ylabel("Y position (mm)")
     plt.title("2D Trajectory Tracking")

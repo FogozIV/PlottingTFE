@@ -19,7 +19,7 @@ subsubVersion = None
 result = []
 class_type = None
 done = True
-with open("data_bin/BenchmarkCurve1750160317.bin", "rb") as f:
+with open("BenchmarkCurve1750359559.bin", "rb") as f:
     data = f.read(8)
     if(len(data) != 8):
         raise ValueError("Version of Benchmark not found")
@@ -54,11 +54,12 @@ with open("data_bin/BenchmarkCurve1750160317.bin", "rb") as f:
             done = False
             print("Value error")
             break
-        print(result[-1])
+        #print(result[-1])
 if all(getattr(d, 'dt', 0.0) == 0.0 for d in result):
     dts = list(accumulate(d.robot_dt for d in result))
     for obj, dt in zip(result, dts):
         obj.dt = dt
+
 if not done:
     print("issue")
 elif version == 0:
@@ -178,7 +179,7 @@ elif version == 10:
 elif version == 11:
     #plot_rotational_tracking(result)
     #plot_error_speed(result)
-    plot_translational_ramp_speed_comparison(result)
+    plot_translational_ramp_speed_comparison(result, other=False)
     plot_acceleration(result)
     plot_pwm(result)
     plot_up_ui_ud(result)
@@ -193,5 +194,6 @@ elif version == 11:
         plot_a(result)
     plot_variable(result, lambda x: x.rotational_position_deg, ylabel="Rotational Position(deg)", title="Rotational Position in function of time")
     plot_variable(result, lambda x: x.rotational_target_deg, ylabel="Rotational Target(deg)", title="Rotational Target in function of time")
+    plot_variable(result, lambda x: x.rotational_target_deg - x.rotational_position_deg)
     plot_rotational_tracking(result)
     plot_translational_tracking(result)
