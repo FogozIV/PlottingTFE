@@ -23,7 +23,7 @@ def plot_translational_tracking(data):
     plt.grid(True)
     plt.tight_layout()
     plt.show(block=True)
-def plot_rotational_speed_comparison(data):
+def plot_rotational_speed_comparison(data, other=False):
     if not data:
         print("No data to plot.")
         return
@@ -31,12 +31,13 @@ def plot_rotational_speed_comparison(data):
     time = [d.dt for d in data]
     ramp_speed = [d.ramp_speed_deg for d in data]
     estimated_speed = [d.estimated_speed_deg for d in data]
-    other_estimated_speed = [d.other_estimated_speed_deg for d in data]
 
     plt.figure()
     plt.plot(time, ramp_speed, label="Ramp Speed (deg/s)")
     plt.plot(time, estimated_speed, label="Estimated Speed (deg/s)")
-    plt.plot(time, other_estimated_speed, label="Other Estimated Speed (deg/s)")
+    if other:
+        other_estimated_speed = [d.other_estimated_speed_deg for d in data]
+        plt.plot(time, other_estimated_speed, label="Other Estimated Speed (deg/s)")
     plt.xlabel("Time (s)")
     plt.ylabel("Speed (deg/s)")
     plt.title("Comparison of Rotational Speeds")

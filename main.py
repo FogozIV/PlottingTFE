@@ -19,7 +19,7 @@ subsubVersion = None
 result = []
 class_type = None
 done = True
-with open("BenchmarkCurve1750359559.bin", "rb") as f:
+with open("BenchmarkController1750707351ANGLE.bin", "rb") as f:
     data = f.read(8)
     if(len(data) != 8):
         raise ValueError("Version of Benchmark not found")
@@ -44,7 +44,7 @@ with open("BenchmarkCurve1750359559.bin", "rb") as f:
             class_type = versions[version][subVersion]
     else:
         class_type = versions[version]
-    print(version, " ", subVersion)
+    print(version, subVersion)
 
 
     while data := f.read(class_type.get_length()):
