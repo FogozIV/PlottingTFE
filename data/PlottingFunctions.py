@@ -395,7 +395,43 @@ def plot_ramp_vs_estimated_speed(data):
     plt.tight_layout()
     plt.show(block=True)
 
-def plot_speed_error(data):
+def plot_pos_target(data, type="deg"):
+    if not data:
+        print("No data to plot.")
+        return
+
+    time = [d.dt for d in data]
+
+    plt.figure()
+    plt.plot(time, [d.position for d in data], label="Position")
+    plt.plot(time, [d.target for d in data], label="Target")
+    plt.xlabel("Time (s)")
+    plt.ylabel(f"Error ({type})")
+    plt.title("Position vs Target Over Time")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
+
+def plot_speed_error(data, type="deg"):
+    if not data:
+        print("No data to plot.")
+        return
+
+    time = [d.dt for d in data]
+    error = [d.ramp_speed - d.estimated_speed for d in data]
+
+    plt.figure()
+    plt.plot(time, error, label="Speed Error (Ramp - Estimated)")
+    plt.xlabel("Time (s)")
+    plt.ylabel(f"Error ({type}/s)")
+    plt.title("Ramp vs Estimated Speed Error Over Time")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=True)
+
+def plot_speed_angle_error(data):
     if not data:
         print("No data to plot.")
         return

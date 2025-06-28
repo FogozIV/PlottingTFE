@@ -1,6 +1,8 @@
+from data import ZieglerNicholsClasses
 from data.VersionAndClasses import *
 from data.PlottingFunctions import *
 from data.CurveBenchmarkClasses import *
+from data.ZieglerNicholsClasses import *
 from itertools import accumulate
 import matplotlib
 from math import sqrt
@@ -18,33 +20,38 @@ subVersion = None
 subsubVersion = None
 result = []
 class_type = None
+#class_type = ZieglerNicholsNotVersionMarkedParser(0,0)
 done = True
-with open("BenchmarkController1750707351ANGLE.bin", "rb") as f:
-    data = f.read(8)
-    if(len(data) != 8):
-        raise ValueError("Version of Benchmark not found")
-    version = struct.unpack('>Q', data)[0]
-    print("Version =", version)
-    if(version in version_with_subversion):
-        data = f.read(1)
-        if(len(data) != 1):
-            raise ValueError("Subversion of Benchmark not found")
-        subVersion = struct.unpack('>B', data)[0]
-        if(version in version_with_subsubversion):
+with open("data_rapport/BenchmarkControllerZieglerNicholsDISTANCE.bin", "rb") as f:
+    if class_type is None:
+        data = f.read(8)
+        if(len(data) != 8):
+            raise ValueError("Version of Benchmark not found")
+        version = struct.unpack('>Q', data)[0]
+        print("Version =", version)
+        if(version in version_with_subversion):
             data = f.read(1)
-            if (len(data) != 1):
-                raise ValueError("Subsubversion of Benchmark not found")
-            subsubVersion = struct.unpack('>B', data)[0]
+            if(len(data) != 1):
+                raise ValueError("Subversion of Benchmark not found")
+            subVersion = struct.unpack('>B', data)[0]
+            if(version in version_with_subsubversion):
+                data = f.read(1)
+                if (len(data) != 1):
+                    raise ValueError("Subsubversion of Benchmark not found")
+                subsubVersion = struct.unpack('>B', data)[0]
+                class_type = versions[version]
+                if isinstance(class_type, type) and issubclass(class_type, CustomParser):
+                    class_type = class_type(subVersion, subsubVersion)
+                else:
+                    class_type = class_type[subVersion][subsubVersion]
+            else:
+                print(version, subVersion)
+                class_type = versions[version][subVersion]
+        else:
             class_type = versions[version]
             if isinstance(class_type, type) and issubclass(class_type, CustomParser):
-                class_type = class_type(subVersion, subsubVersion)
-            else:
-                class_type = class_type[subVersion][subsubVersion]
-        else:
-            class_type = versions[version][subVersion]
-    else:
-        class_type = versions[version]
-    print(version, subVersion)
+                class_type = class_type(0,0)
+            print(version, subVersion)
 
 
     while data := f.read(class_type.get_length()):
@@ -54,7 +61,7 @@ with open("BenchmarkController1750707351ANGLE.bin", "rb") as f:
             done = False
             print("Value error")
             break
-        #print(result[-1])
+        print(result[-1])
 if all(getattr(d, 'dt', 0.0) == 0.0 for d in result):
     dts = list(accumulate(d.robot_dt for d in result))
     for obj, dt in zip(result, dts):
@@ -103,8 +110,9 @@ elif version == 4:
     do_fft(result, lambda d: (d.translational_target - d.translational_position))
     do_fft(result, lambda d: (d.ud))
 elif version == 6:  # Z_N_LEGACY_ANGLE
-    plot_rotational_tracking_with_pwm(result)
-    plot_heading_error(result)
+    plot_pwm(result)
+    plot_speed_error(result)
+    plot_pos_target(result)
 
 elif version == 7:  # Z_N_LEGACY_DISTANCE
     plot_translational_tracking_with_pwm(result)
@@ -115,7 +123,7 @@ elif version == 8:  # Z_N_LEGACY_ANGLE_SPEED
     plot_heading_vs_target_heading(result)
     plot_pwm(result)
     plot_ramp_vs_estimated_speed(result)
-    plot_speed_error(result)
+    plot_speed_angle_error(result)
     freq, spec, mag = do_fft(result, lambda d: (d.estimated_speed_deg - d.ramp_speed_deg))
 
     sampling_rate = 1.0/(np.average([d.robot_dt for d in result]))

@@ -2,6 +2,8 @@ import dataclasses
 import struct
 from itertools import accumulate
 from data.CurveBenchmarkClasses import *
+from data.ZieglerNicholsClasses import ZieglerNicholsParser
+
 
 @dataclasses.dataclass
 class AngleData:
@@ -40,8 +42,9 @@ class DistanceData:
             raise ValueError(f'Not enough bytes to unpack DistanceData (need {DistanceData.get_length()} bytes)')
         values = struct.unpack('>6d', data)  # > = big-endian, 6 doubles
         return DistanceData(*values)
+
 @dataclasses.dataclass
-class DistanceDataBase:
+class DistanceDataSuperBase:
     current_error: float
     error: float
     dt: float
@@ -50,6 +53,19 @@ class DistanceDataBase:
     translational_target: float
     left_pwm: float
     right_pwm: float
+    @staticmethod
+    def get_length():
+        return 8*8
+
+    @staticmethod
+    def from_bytes(data: bytes) -> 'DistanceDataSuperBase':
+        if len(data) < DistanceDataSuperBase.get_length():
+            raise ValueError(f'Not enough bytes to unpack DistanceData (need {DistanceDataSuperBase.get_length()} bytes)')
+        values = struct.unpack('>8d', data)  # > = big-endian, 6 doubles
+        return DistanceDataSuperBase(*values)
+
+@dataclasses.dataclass
+class DistanceDataBase(DistanceDataSuperBase):
     up: float
     ui: float
     ud: float
@@ -224,9 +240,9 @@ versions = [
     DistanceData,                # 1: BENCHMARK_LEGACY_DISTANCE
     DistanceAngleData,           # 2: BENCHMARK_LEGACY_DISTANCE_ANGLE
     AngleSpeedComparisonData,    # 3: BENCHMARK_ANGLE_V_0_1
-    [None, DistanceDataPID, DistanceDataPIDSpeedFF], # 4: BENCHMARK_DISTANCE_V_0_1
+    [None, DistanceDataPID, DistanceDataPIDSpeedFF, DistanceDataSuperBase], # 4: BENCHMARK_DISTANCE_V_0_1
     DistanceAngleData,           # 5: BENCHMARK_DISTANCE_ANGLE_V_0_1
-    AnglePWMData,                # 6: Z_N_LEGACY_ANGLE
+    ZieglerNicholsParser,                # 6: Z_N_LEGACY_ANGLE
     DistancePWMData,             # 7: Z_N_LEGACY_DISTANCE
     AngleSpeedData,              # 8: Z_N_LEGACY_ANGLE_SPEED
     DistanceSpeedData,           # 9: Z_N_LEGACY_DISTANCE_SPEED
