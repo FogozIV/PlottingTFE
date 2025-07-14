@@ -1,6 +1,8 @@
 import dataclasses
 import struct
 from itertools import accumulate
+
+from data.CompleteParserClasses import *
 from data.CurveBenchmarkClasses import *
 from data.ZieglerNicholsClasses import ZieglerNicholsParser
 
@@ -241,11 +243,14 @@ versions = [
     DistanceAngleData,           # 2: BENCHMARK_LEGACY_DISTANCE_ANGLE
     AngleSpeedComparisonData,    # 3: BENCHMARK_ANGLE_V_0_1
     [None, DistanceDataPID, DistanceDataPIDSpeedFF, DistanceDataSuperBase], # 4: BENCHMARK_DISTANCE_V_0_1
-    DistanceAngleData,           # 5: BENCHMARK_DISTANCE_ANGLE_V_0_1
+    BenchmarkDistanceAngleV01,           # 5: BENCHMARK_DISTANCE_ANGLE_V_0_1
     ZieglerNicholsParser,                # 6: Z_N_LEGACY_ANGLE
     DistancePWMData,             # 7: Z_N_LEGACY_DISTANCE
     AngleSpeedData,              # 8: Z_N_LEGACY_ANGLE_SPEED
     DistanceSpeedData,           # 9: Z_N_LEGACY_DISTANCE_SPEED
     CurveBenchmarkParser,        # 10 : BENCHMARK_LEGACY_CURVE
-    CurveBenchmarkParserV01      # 11 : BENCHMARK_CURVE_V_0_1
+    CurveBenchmarkParserV01,      # 11 : BENCHMARK_CURVE_V_0_1
+    BenchmarkAngleV02,
+    BenchmarkDistanceV02
+
 ]

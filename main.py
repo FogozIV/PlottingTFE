@@ -1,4 +1,5 @@
 from data import ZieglerNicholsClasses
+from data.Parser import CompleteParser, ParsableClass
 from data.VersionAndClasses import *
 from data.PlottingFunctions import *
 from data.CurveBenchmarkClasses import *
@@ -22,7 +23,7 @@ result = []
 class_type = None
 #class_type = ZieglerNicholsNotVersionMarkedParser(0,0)
 done = True
-with open("data_rapport/BenchmarkControllerZieglerNicholsDISTANCE.bin", "rb") as f:
+with open("BenchmarkController1752528835ANGLE.bin", "rb") as f:
     if class_type is None:
         data = f.read(8)
         if(len(data) != 8):
@@ -51,22 +52,26 @@ with open("data_rapport/BenchmarkControllerZieglerNicholsDISTANCE.bin", "rb") as
             class_type = versions[version]
             if isinstance(class_type, type) and issubclass(class_type, CustomParser):
                 class_type = class_type(0,0)
+            elif isinstance(class_type, type) and issubclass(class_type, ParsableClass):
+                class_type = CompleteParser(f, class_type())
+                result = class_type.get_result()
+                class_type.display()
             print(version, subVersion)
 
+    if not issubclass(type(class_type), CompleteParser):
 
-    while data := f.read(class_type.get_length()):
-        try:
-            result.append(class_type.from_bytes(data))
-        except ValueError:
-            done = False
-            print("Value error")
-            break
-        print(result[-1])
+        while data := f.read(class_type.get_length()):
+            try:
+                result.append(class_type.from_bytes(data))
+            except ValueError:
+                done = False
+                print("Value error")
+                break
+            print(result[-1])
 if all(getattr(d, 'dt', 0.0) == 0.0 for d in result):
     dts = list(accumulate(d.robot_dt for d in result))
     for obj, dt in zip(result, dts):
         obj.dt = dt
-
 if not done:
     print("issue")
 elif version == 0:
