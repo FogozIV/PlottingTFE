@@ -140,8 +140,17 @@ def plot_variable(results, attr, label=None, ylabel=None, title=None):
 
     plt.plot(times, values, label=label or attr)
     plt.xlabel("Time (s)")
-    plt.ylabel(ylabel or attr)
-    plt.title(title or attr)
+    ax = plt.gca()  # get current axes
+    title_text = ax.get_title()
+    if title:
+        plt.title(title)
+    elif title_text == "" and attr:
+        plt.title(title or attr)
+
+    if ylabel:
+        ax.set_ylabel(ylabel)
+    elif not ax.get_ylabel() and attr:
+        ax.set_ylabel(ylabel or attr)
     if label:
         plt.legend()
     plt.grid(True)
@@ -153,8 +162,11 @@ def plot_variable_fct(results, fct, label=None, ylabel=None, title=None):
         return
     plt.plot(times, values, label=label)
     plt.xlabel("Time (s)")
-    plt.ylabel(ylabel)
-    plt.title(title)
+    ax = plt.gca()  # get current axes
+    if title:
+        plt.title(title)
+    if ylabel:
+        ax.set_ylabel(ylabel)
     if label:
         plt.legend()
     plt.grid(True)

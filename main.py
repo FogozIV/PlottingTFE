@@ -23,7 +23,7 @@ result = []
 class_type = None
 #class_type = ZieglerNicholsNotVersionMarkedParser(0,0)
 done = True
-with open("BenchmarkController1752528835ANGLE.bin", "rb") as f:
+with open("data_rapport_v2/BenchmarkControllerDISTANCEESCTuned.bin", "rb") as f:
     if class_type is None:
         data = f.read(8)
         if(len(data) != 8):
@@ -55,6 +55,7 @@ with open("BenchmarkController1752528835ANGLE.bin", "rb") as f:
             elif isinstance(class_type, type) and issubclass(class_type, ParsableClass):
                 class_type = CompleteParser(f, class_type())
                 result = class_type.get_result()
+
                 class_type.display()
             print(version, subVersion)
 

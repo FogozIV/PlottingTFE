@@ -1,6 +1,7 @@
 import struct
 from dataclasses import dataclass, fields
 from typing import Optional, Type
+import matplotlib.pyplot as plt
 import copy
 from data.Parser import ParsableClass, plot_variable, show_plots, get_all_field_paths, set_field_by_path, \
     get_field_by_path
@@ -34,9 +35,18 @@ class ControllerPID(Controller):
     @staticmethod
     def display_data(results):
         Controller.display_data(results)
-        plot_variable(results, "up", label="K_p contribution")
+        current_figure = plt.gcf()
+        plot_variable(results, "up", label="K_p contribution", title="Contributions of each term of the PID controller", ylabel="d.c")
         plot_variable(results, "ui", label="K_i contribution")
         plot_variable(results, "ud", label="K_d contribution")
+        plt.figure()
+        plot_variable(results, "up", label="K_p contribution", title="Contribution of K_p in d.c.")
+        plt.figure()
+        plot_variable(results, "ui", label="K_i contribution", title="Contribution of K_i in d.c.")
+        plt.figure()
+        plot_variable(results, "ud", label="K_d contribution", title="Contribution of K_d in d.c.")
+        plt.figure(current_figure)
+
 
 
 @dataclass
@@ -46,7 +56,11 @@ class ControllerPIDSpeedFeedForward(ControllerPID):
     @staticmethod
     def display_data(results):
         ControllerPID.display_data(results)
+        current_figure = plt.gcf()
         plot_variable(results, "uff", label="Feed forward contribution")
+        plt.figure()
+        plot_variable(results, "uff", label="Feed forward contribution", title="Contribution of the feed forward in d.c.")
+        plt.figure(current_figure)
 
 
 @dataclass
@@ -56,7 +70,11 @@ class ControllerPIDFilteredD(ControllerPID):
     @staticmethod
     def display_data(results):
         ControllerPID.display_data(results)
+        current_figure = plt.gcf()
         plot_variable(results, "rawUd", label="Raw K_d contribution")
+        plt.figure()
+        plot_variable(results, "rawUd", label="Raw K_d contribution", title="Contribution of Raw K_d in d.c.")
+        plt.figure(current_figure)
 
 @dataclass
 class ControllerFeedForward(Controller):
@@ -67,7 +85,11 @@ class ControllerFeedForward(Controller):
         for c in results:
             c.innerController.dt = c.dt
         type(results[0].innerController).display_data([r.innerController for r in results])
+        current_figure = plt.gcf()
         plot_variable(results, "uff", label="Feed forward contribution")
+        plt.figure()
+        plot_variable(results, "uff", label="Feed forward contribution", title="Contribution of the feed forward in d.c.")
+        plt.figure(current_figure)
 
 data = [
     Controller,
