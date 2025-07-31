@@ -173,6 +173,6 @@ def plot_variable_fct(results, fct, label=None, ylabel=None, title=None):
 
 def show_plots(block=False):
     plt.tight_layout()
-    plt.show(block=True)
+    plt.show(block=block)
 
 

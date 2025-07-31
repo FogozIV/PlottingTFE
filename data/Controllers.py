@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 import copy
 from data.Parser import ParsableClass, plot_variable, show_plots, get_all_field_paths, set_field_by_path, \
     get_field_by_path
+from data.SubControllers import SubController
 
-controller_types = [
-]
+controller_types = []
+
 @dataclass
 class Controller(ParsableClass):
     def has_inner(self):
@@ -25,78 +26,26 @@ class Controller(ParsableClass):
     def display_data(results):
         pass
 
-
 @dataclass
-class ControllerPID(Controller):
-    up: Optional[float] = None
-    ui: Optional[float] = None
-    ud: Optional[float] = None
-
-    @staticmethod
-    def display_data(results):
-        Controller.display_data(results)
-        current_figure = plt.gcf()
-        plot_variable(results, "up", label="K_p contribution", title="Contributions of each term of the PID controller", ylabel="d.c")
-        plot_variable(results, "ui", label="K_i contribution")
-        plot_variable(results, "ud", label="K_d contribution")
-        plt.figure()
-        plot_variable(results, "up", label="K_p contribution", title="Contribution of K_p in d.c.")
-        plt.figure()
-        plot_variable(results, "ui", label="K_i contribution", title="Contribution of K_i in d.c.")
-        plt.figure()
-        plot_variable(results, "ud", label="K_d contribution", title="Contribution of K_d in d.c.")
-        plt.figure(current_figure)
-
-
-
-@dataclass
-class ControllerPIDSpeedFeedForward(ControllerPID):
-    uff: Optional[float] = None
-
-    @staticmethod
-    def display_data(results):
-        ControllerPID.display_data(results)
-        current_figure = plt.gcf()
-        plot_variable(results, "uff", label="Feed forward contribution")
-        plt.figure()
-        plot_variable(results, "uff", label="Feed forward contribution", title="Contribution of the feed forward in d.c.")
-        plt.figure(current_figure)
-
-
-@dataclass
-class ControllerPIDFilteredD(ControllerPID):
-    rawUd: Optional[float] = None
-
-    @staticmethod
-    def display_data(results):
-        ControllerPID.display_data(results)
-        current_figure = plt.gcf()
-        plot_variable(results, "rawUd", label="Raw K_d contribution")
-        plt.figure()
-        plot_variable(results, "rawUd", label="Raw K_d contribution", title="Contribution of Raw K_d in d.c.")
-        plt.figure(current_figure)
-
-@dataclass
-class ControllerFeedForward(Controller):
-    innerController: Optional[Controller] = None
-    uff: Optional[float] = None
+class TripleBasicController(ParsableClass):
+    distance_controller: Optional[SubController] = None
+    angle_controller: Optional[SubController] = None
+    distance_angle_controller: Optional[SubController] = None
     @staticmethod
     def display_data(results):
         for c in results:
-            c.innerController.dt = c.dt
-        type(results[0].innerController).display_data([r.innerController for r in results])
-        current_figure = plt.gcf()
-        plot_variable(results, "uff", label="Feed forward contribution")
+            c.distance_controller.dt = c.dt
+            c.angle_controller.dt = c.dt
+            c.distance_angle_controller.dt = c.dt
+        type(results[0].distance_controller).show([r.distance_controller for r in results], "distance controller")
         plt.figure()
-        plot_variable(results, "uff", label="Feed forward contribution", title="Contribution of the feed forward in d.c.")
-        plt.figure(current_figure)
+        type(results[0].angle_controller).show([r.angle_controller for r in results], "angle controller")
+        plt.figure()
+        type(results[0].distance_angle_controller).show([r.distance_angle_controller for r in results], "distance angle controller")
 
 data = [
     Controller,
-    ControllerPID,
-    ControllerPIDSpeedFeedForward,
-    ControllerPIDFilteredD,
-    ControllerFeedForward,
+    TripleBasicController,
 ]
 for d in data:
     controller_types.append(d)

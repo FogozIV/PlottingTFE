@@ -1,3 +1,5 @@
+import os
+
 from data import ZieglerNicholsClasses
 from data.Parser import CompleteParser, ParsableClass
 from data.VersionAndClasses import *
@@ -23,7 +25,10 @@ result = []
 class_type = None
 #class_type = ZieglerNicholsNotVersionMarkedParser(0,0)
 done = True
-with open("data_rapport_v2/BenchmarkControllerDISTANCEESCTuned.bin", "rb") as f:
+
+filename = "data_rapport_v2/BenchmarkController1753807455ANGLE.bin"
+
+with open(filename, "rb") as f:
     if class_type is None:
         data = f.read(8)
         if(len(data) != 8):
@@ -211,3 +216,15 @@ elif version == 11:
     plot_variable(result, lambda x: x.rotational_target_deg - x.rotational_position_deg)
     plot_rotational_tracking(result)
     plot_translational_tracking(result)
+
+print("Number of figures ", plt.get_fignums())
+if(plt.get_fignums() != []):
+    import shutil
+    shutil.rmtree(filename.replace(".bin", ""), True)
+    os.makedirs(f"{filename.replace(".bin", "")}")
+for i in plt.get_fignums():
+    fig = plt.figure(i)
+    ax = plt.gca()  # get current axes
+    title = ax.get_title() if ax.get_title() else f"figure_{i}"
+    safe_title = title.replace(" ", "_")
+    fig.savefig(f"{filename.replace(".bin", "")}/{safe_title}.png")   # or .pdf/.svg etc.

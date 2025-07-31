@@ -251,6 +251,7 @@ versions = [
     CurveBenchmarkParser,        # 10 : BENCHMARK_LEGACY_CURVE
     CurveBenchmarkParserV01,      # 11 : BENCHMARK_CURVE_V_0_1
     BenchmarkAngleV02,
-    BenchmarkDistanceV02
+    BenchmarkDistanceV02,
+    UniversalBenchmarkV01
 
 ]
