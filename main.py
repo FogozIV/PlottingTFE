@@ -26,7 +26,7 @@ class_type = None
 #class_type = ZieglerNicholsNotVersionMarkedParser(0,0)
 done = True
 
-filename = "data_rapport_v2/BenchmarkController1753807455ANGLE.bin"
+filename = "data_rapport_v2/BenchmarkControllerANGLEESCTuned.bin"
 
 with open(filename, "rb") as f:
     if class_type is None:

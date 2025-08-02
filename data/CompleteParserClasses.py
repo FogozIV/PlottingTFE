@@ -5,7 +5,7 @@ from dataclasses import dataclass, fields
 from typing import Optional, Type
 import copy
 from data.Parser import ParsableClass, is_field_subclass_of, plot_variable, show_plots, get_all_field_paths, \
-    set_field_by_path, get_field_by_path, plot_variable_fct
+    set_field_by_path, get_field_by_path, plot_variable_fct, plot_2d
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -188,6 +188,13 @@ class UniversalBenchmarkV01(ParsableClass):
         plot_variable(results, "translational_ramp_speed", "Ramp Speed", title="Translational Speed")
         plot_variable(results, "translational_estimated_speed", "Estimated Speed", ylabel="Speed (mm/s)")
         #plot_variable(results, "translational_other_estimated_speed", "Estimated Speed Kalman")
+        plt.figure()
+        plot_variable(results, "translational_ramp_speed", "Ramp Speed", title="Translational Speed")
+        plot_variable(results, "translational_estimated_speed", "Estimated Speed", ylabel="Speed (mm/s)")
+        plot_variable(results, "translational_other_estimated_speed", "Estimated Speed Kalman")
+        plt.figure()
+        plot_2d(results, "currentPositionX", "currentPositionY", "Position", title="Current Position", ylabel="Position y (mm)", xlabel="Position x (mm)")
+
         plt.figure()
         plot_variable(results, "translational_estimated_speed", "Estimated Speed", ylabel="Speed (mm/s)")
         plt.figure()

@@ -170,6 +170,31 @@ def plot_variable_fct(results, fct, label=None, ylabel=None, title=None):
     if label:
         plt.legend()
     plt.grid(True)
+def plot_2d(results, x_attr, y_attr, label=None, xlabel=None, ylabel=None, title=None, scatter=False):
+    """Plot x_attr vs. y_attr from results (e.g. robot trajectory)."""
+    xs = [getattr(r, x_attr, None) for r in results]
+    ys = [getattr(r, y_attr, None) for r in results]
+
+    # Skip if all values are None
+    if all(v is None for v in xs) or all(v is None for v in ys):
+        return
+
+    plt.plot(xs[0], ys[0], 'bo', label="Starting point")
+    plt.plot(xs[-1], ys[-1], 'ro', label="End point")
+
+    if scatter:
+        plt.scatter(xs, ys, label=label)
+    else:
+        plt.plot(xs, ys, label=label)
+
+    plt.xlabel(xlabel or x_attr)
+    plt.ylabel(ylabel or y_attr)
+    if title:
+        plt.title(title)
+    if label:
+        plt.legend()
+    plt.axis('equal')  # Keep correct proportions (useful for trajectories)
+    plt.grid(True)
 
 def show_plots(block=False):
     plt.tight_layout()
