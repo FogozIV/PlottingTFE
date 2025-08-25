@@ -132,7 +132,14 @@ class CompleteParser:
     def display(self):
         type(self.data_type).display_data(self.get_result())
 def plot_variable(results, attr, label=None, ylabel=None, title=None):
-    values = [getattr(r, attr, None) for r in results]
+    values = []
+    for r in results:
+        for a in attr.split("."):
+            if r is None:
+                break
+            r = getattr(r, a, None)
+        values.append(r)
+    #values = [getattr(r, attr, None) for r in results]
     times = [getattr(r, 'dt', 0.0) for r in results]
 
     if all(v is None for v in values):
